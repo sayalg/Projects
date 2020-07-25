@@ -1,0 +1,65 @@
+#!/bin/bash
+
+#PBS -l nodes=1:ppn=16
+#PBS -l mem=3904gb
+#PBS -N abyss.pt
+#PBS -j oe
+#PBS -q hammerhead
+#PBS -l feature=mem_4tb
+#PBS -l walltime=144:00:00
+
+IFS=$'\n'
+set -eu
+umask 007
+
+module load abyss/2.1.1
+module list
+
+export MP_03KB_1="path/to/file"
+export MP_03KB_2="path/to/file"
+export MP_05KB_1="path/to/file"
+export MP_05KB_2="path/to/file"
+export MP_08KB_1="path/to/file"
+export MP_08KB_2="path/to/file"
+export MP_10KB_1="path/to/file"
+export MP_10KB_2="path/to/file"
+export MP_FREE_1="path/to/file"
+export MP_FREE_2="path/to/file"
+export PE_03KB_1="path/to/file"
+export PE_03KB_2="path/to/file"
+export PE_05KB_1="path/to/file"
+export PE_05KB_2="path/to/file"
+export PE_08KB_1="path/to/file"
+export PE_08KB_2="path/to/file"
+export PE_FREE_1="path/to/file"
+export PE_FREE_2="path/to/file"
+export SE="path/to/file"
+export LONG="path/to/file"
+export WORK_DIR="path/to/file"
+
+printf "Working dir: `pwd`\n"
+printf "Start [`date`]\n"
+
+for KMER in {23..64..4} ; do
+	cd ${WORK_DIR}
+	mkdir k${KMER}
+	abyss-pe np=16 -C k${KMER} k=${KMER} name=pterribilis${KMER} \
+		lib='pea peb pec ped' \
+		mp='mpf mpg mph mpi mpj' \
+		long='longk' \
+		pea='${PE_03KB_1} ${PE_03KB_2}' \
+		peb='${PE_05KB_1} ${PE_05KB_2}' \
+		pec='${PE_08KB_1} ${PE_08KB_2}' \
+		ped='${PE_FREE_1} ${PE_FREE_2}' \
+		mpf='${MP_03KB_1} ${MP_03KB_2}' \
+		mpg='${MP_05KB_1} ${MP_05KB_2}' \
+		mph='${MP_08KB_1} ${MP_08KB_2}' \
+		mpi='${MP_10KB_1} ${MP_10KB_2}' \
+		mpj='${MP_FREE_1} ${MP_FREE_2}' \
+		longk='${LONG}' \
+		se='${SE}'
+	wait
+done
+
+printf "Done [`date`]\n"
+

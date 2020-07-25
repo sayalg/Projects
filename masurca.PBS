@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#PBS -l nodes=1:ppn=64
+#PBS -l mem=3904gb
+#PBS -N masurca.pt
+#PBS -j oe
+#PBS -q hammerhead
+#PBS -l feature=mem_4tb
+#PBS -l walltime=480:00:00
+
+IFS=$'\n'
+set -eu
+umask 007
+
+module purge
+module load masurca/3.3.4
+module list
+
+export WD="path/to/file"
+
+printf "> Start [`date`]\n"
+
+cd ${WD}
+
+masurca masurca_config.txt
+
+printf "> Assembly script done.\n"
+
+bash assemble.sh
+
+printf "> Done [`date`]\n"
+
+
